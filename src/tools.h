@@ -4,6 +4,7 @@
 #include "Eigen/Dense"
 #include "render/render.h"
 #include <pcl/io/pcd_io.h>
+#include<bits/stdc++.h> i
 
 using Eigen::MatrixXd;
 using Eigen::VectorXd;

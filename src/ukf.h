@@ -95,6 +95,28 @@ class UKF {
 
   // Sigma point spreading parameter
   double lambda_;
+
+  // Predition step helper variables
+  struct predicition{
+       Eigen::VectorXd x_aug;
+       Eigen::MatrixXd P_aug;
+       Eigen::MatrixXd Xsig_aug;
+       double A;
+
+  }pred_;
+  //  helper variables
+  struct helper{
+    int n_z;
+    Eigen::MatrixXd R;
+    Eigen::MatrixXd Zsig;
+    Eigen::VectorXd z_pred;
+    Eigen::MatrixXd S;
+    Eigen::MatrixXd Tc;
+    Eigen::MatrixXd K;
+  }r , l;
+
+  double NIS_radar_=0;
+  double NIS_laser_=0;
 };
 
 #endif  // UKF_H

@@ -20,14 +20,14 @@ public:
 	// Parameters 
 	// --------------------------------
 	// Set which cars to track with UKF
-	std::vector<bool> trackCars = {true,true,true};
+    std::vector<bool> trackCars = {true,true,true};
 	// Visualize sensor measurements
-	bool visualize_lidar = true;
-	bool visualize_radar = true;
-	bool visualize_pcd = false;
+    bool visualize_lidar = false;
+    bool visualize_radar = false;
+    bool visualize_pcd = false;
 	// Predict path in the future using UKF
-	double projectedTime = 0;
-	int projectedSteps = 0;
+    double projectedTime = 0;
+    int projectedSteps = 0;
 	// --------------------------------
 
 	Highway(pcl::visualization::PCLVisualizer::Ptr& viewer)
@@ -130,6 +130,7 @@ public:
 				VectorXd gt(4);
 				gt << traffic[i].position.x, traffic[i].position.y, traffic[i].velocity*cos(traffic[i].angle), traffic[i].velocity*sin(traffic[i].angle);
 				tools.ground_truth.push_back(gt);
+
 				tools.lidarSense(traffic[i], viewer, timestamp, visualize_lidar);
 				tools.radarSense(traffic[i], egoCar, viewer, timestamp, visualize_radar);
 				tools.ukfResults(traffic[i],viewer, projectedTime, projectedSteps);
@@ -140,11 +141,22 @@ public:
     			double v2 = sin(yaw)*v;
 				estimate << traffic[i].ukf.x_[0], traffic[i].ukf.x_[1], v1, v2;
 				tools.estimations.push_back(estimate);
+
 	
 			}
 		}
 		viewer->addText("Accuracy - RMSE:", 30, 300, 20, 1, 1, 1, "rmse");
 		VectorXd rmse = tools.CalculateRMSE(tools.estimations, tools.ground_truth);
+        for (int i = 0; i < traffic.size(); i++)
+        {if(trackCars[i]){
+//        std::cout<<traffic[i].position.x<<"\t"<<traffic[i].position.y<<"\t"<<
+//                   traffic[i].ukf.x_[0]<<"\t"<<traffic[i].ukf.x_[1]<<"\t";
+       // std::cout<<traffic[i].ukf.NIS_laser_<<"\t"<<traffic[i].ukf.NIS_radar_<<"\t";
+            }
+
+        }
+       // std::cout<<std::endl;
+
 		viewer->addText(" X: "+std::to_string(rmse[0]), 30, 275, 20, 1, 1, 1, "rmse_x");
 		viewer->addText(" Y: "+std::to_string(rmse[1]), 30, 250, 20, 1, 1, 1, "rmse_y");
 		viewer->addText("Vx: "	+std::to_string(rmse[2]), 30, 225, 20, 1, 1, 1, "rmse_vx");

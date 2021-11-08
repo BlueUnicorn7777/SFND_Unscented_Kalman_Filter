@@ -162,6 +162,7 @@ struct Car
 
 		position.x += velocity * cos(angle) * dt;
 		position.y += velocity * sin(angle) * dt;
+
 		angle += velocity*steering*dt/Lf;
 		orientation = getQuaternion(angle);
 		velocity += acceleration*dt;
