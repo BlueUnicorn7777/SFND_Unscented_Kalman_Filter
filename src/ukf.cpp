@@ -89,6 +89,7 @@ UKF::UKF() {
     r.R <<  std_radr_*std_radr_, 0, 0,
             0, std_radphi_*std_radphi_, 0,
             0, 0,std_radrd_*std_radrd_;
+
     r.Zsig = MatrixXd(r.n_z, 2 * n_aug_ + 1);
     r.z_pred = VectorXd(r.n_z);
     r.S = MatrixXd(r.n_z,r.n_z);
@@ -107,6 +108,12 @@ UKF::UKF() {
     l.S = MatrixXd(l.n_z,l.n_z);
     l.Tc = MatrixXd(n_x_, l.n_z);
     l.K = MatrixXd(n_x_, l.n_z);
+
+    P_ <<    1,   0,   0,   0,   0,
+               0,   1,   0,   0,   0,
+               0,   0,   1,   0,   0,
+               0,   0,   0,   0.0225,   0,
+               0,   0,   0,   0,   0.0225;
 }
 
 UKF::~UKF() {}
@@ -116,17 +123,15 @@ void UKF::ProcessMeasurement(MeasurementPackage meas_package) {
    * TODO: Complete this function! Make sure you switch between lidar and radar
    * measurements.
    */
+    if (meas_package.sensor_type_ == MeasurementPackage::LASER && !use_laser_) return ; //discard reading
+    else if (meas_package.sensor_type_ == MeasurementPackage::RADAR && !use_radar_) return ; //discard reading
+
+
     if (!is_initialized_) {
         if (meas_package.sensor_type_ == MeasurementPackage::LASER ) {
             x_ << meas_package.raw_measurements_[0],
                     meas_package.raw_measurements_[1],
                     0, 0 , 0;
-            P_ << std_laspx_*std_laspx_, 0, 0, 0, 0,
-                    0, std_laspy_*std_laspy_, 0, 0, 0,
-                    0, 0, 1, 0, 0,
-                    0, 0, 0, 1, 0,
-                    0, 0, 0, 0, 1;
-
         }
         else
             if (meas_package.sensor_type_ == MeasurementPackage::RADAR ) {
@@ -139,11 +144,6 @@ void UKF::ProcessMeasurement(MeasurementPackage meas_package) {
                 double vy = rhodot * sin(phi);
                 double v = sqrt(vx * vx + vy * vy);
                 x_ << x, y, v, rho, rhodot;
-                P_ << std_radr_*std_radr_, 0, 0, 0, 0,
-                        0, std_radr_*std_radr_, 0, 0, 0,
-                        0, 0, std_radrd_*std_radrd_, 0, 0,
-                        0, 0, 0, std_radphi_, 0,
-                        0, 0, 0, 0, std_radphi_;
             }
 
         time_us_ = meas_package.timestamp_;
@@ -155,15 +155,13 @@ void UKF::ProcessMeasurement(MeasurementPackage meas_package) {
     time_us_ = meas_package.timestamp_;
 
     //Predicition
+
      Prediction(dt);
+
     // Measurement update
 
-    if (meas_package.sensor_type_ == MeasurementPackage::LASER && use_laser_){
-        //Prediction(dt);
-        UpdateLidar(meas_package);}
-    else if (meas_package.sensor_type_ == MeasurementPackage::RADAR && use_radar_){
-        //Prediction(dt);
-        UpdateRadar(meas_package);}
+    if (meas_package.sensor_type_ == MeasurementPackage::LASER){UpdateLidar(meas_package);}
+    else if (meas_package.sensor_type_ == MeasurementPackage::RADAR){UpdateRadar(meas_package);}
 
 //    std::cout<<meas_package.raw_measurements_.x()<<"\t"<<meas_package.raw_measurements_.y()
 //            ;
@@ -315,8 +313,8 @@ void UKF::UpdateLidar(MeasurementPackage meas_package) {
      //std::cout<<NIS_radar_<<std::endl;
 
     // update state mean and covariance matrix
-   // x_ = x_ + l.K*(z - l.z_pred);
-    x_ = x_ + l.K*(z_diff);
+    x_ = x_ + l.K*(z - l.z_pred);
+   // x_ = x_ + l.K*(z_diff);
     P_ = P_ - l.K*l.S*l.K.transpose();
 
 }

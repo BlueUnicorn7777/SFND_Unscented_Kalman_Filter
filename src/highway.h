@@ -149,13 +149,13 @@ public:
 		VectorXd rmse = tools.CalculateRMSE(tools.estimations, tools.ground_truth);
         for (int i = 0; i < traffic.size(); i++)
         {if(trackCars[i]){
-//        std::cout<<traffic[i].position.x<<"\t"<<traffic[i].position.y<<"\t"<<
-//                   traffic[i].ukf.x_[0]<<"\t"<<traffic[i].ukf.x_[1]<<"\t";
-       // std::cout<<traffic[i].ukf.NIS_laser_<<"\t"<<traffic[i].ukf.NIS_radar_<<"\t";
+        std::cout<<traffic[i].position.x<<"\t"<<traffic[i].position.y<<"\t"<<
+                   traffic[i].ukf.x_[0]<<"\t"<<traffic[i].ukf.x_[1]<<"\t";
+        std::cout<<traffic[i].ukf.NIS_laser_<<"\t"<<traffic[i].ukf.NIS_radar_<<"\t";
             }
 
         }
-       // std::cout<<std::endl;
+        std::cout<<std::endl;
 
 		viewer->addText(" X: "+std::to_string(rmse[0]), 30, 275, 20, 1, 1, 1, "rmse_x");
 		viewer->addText(" Y: "+std::to_string(rmse[1]), 30, 250, 20, 1, 1, 1, "rmse_y");
