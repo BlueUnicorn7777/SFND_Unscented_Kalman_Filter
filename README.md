@@ -69,8 +69,8 @@ If you'd like to generate your own radar and lidar modify the code in `highway.h
 change how measurements are taken, for instance lidar markers could be the (x,y) center of bounding boxes by scanning the PCD environment
 and performing clustering. This is similar to what was done in Sensor Fusion Lidar Obstacle Detection.
 
-## Project Instructions and Rubric
+## Additional Charts
+<img src="media/LIDAR_NIS.png" width="800" height="600" />
+<img src="media/RADAR_NIS.png" width="800" height="600" />
+<img src="media/UKF_tracking.png" width="800" height="600" />
 
-This information is only accessible by people who are already enrolled in Sensor Fusion. 
-If you are enrolled, see the project page in the classroom
-for instructions and the project rubric.
